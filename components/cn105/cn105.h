@@ -19,6 +19,8 @@
 #include <esphome/components/button/button.h>
 #include <esphome/components/binary_sensor/binary_sensor.h>
 #include "cycle_management.h"
+#include <cmath>
+#include <flat_map>
 
 #ifdef USE_ESP32
 #include <mutex>
@@ -182,13 +184,38 @@ namespace esphome {
         // helpers
 
         float FahrenheitToCelsius(int tempF) {
-            float temp = (tempF - 32) / 1.8;
-            return ((float)round(temp * 2)) / 2;                 //Round to nearest 0.5C
+            static const auto& lookupTable = *new std::flat_map<int, float>{
+                {61, 16.0}, {62, 16.5}, {63, 17.0}, {64, 17.5}, {65, 18.0},
+                {66, 18.5}, {67, 19.0}, {68, 20.0}, {69, 21.0}, {70, 21.5},
+                {71, 22.0}, {72, 22.5}, {73, 23.0}, {74, 23.5}, {75, 24.0},
+                {76, 24.5}, {77, 25.0}, {78, 25.5}, {79, 26.0}, {80, 26.5},
+                {81, 27.0}, {82, 27.5}, {83, 28.0}, {84, 28.5}, {85, 29.0},
+                {86, 29.5}, {87, 30.0}, {88, 30.5}
+            };
+
+            if (auto it = lookupTable.find(tempF); it != lookupTable.end()) {
+                return it->second;
+            }
+        
+            const float result = (tempF - 32.0) / 1.8;
+            return std::round(result * 2) / 2.0;
         }
 
         int CelsiusToFahrenheit(float tempC) {
-            float temp = (tempC * 1.8) + 32;                //round up if heat, down if cool or any other mode
-            return (int)(temp + 0.5);
+            static const auto& lookupTable = *new std::flat_map<float, int>{
+                {16.0, 61}, {16.5, 62}, {17.0, 63}, {17.5, 64}, {18.0, 65},
+                {18.5, 66}, {19.0, 67}, {20.0, 68}, {21.0, 69}, {21.5, 70},
+                {22.0, 71}, {22.5, 72}, {23.0, 73}, {23.5, 74}, {24.0, 75},
+                {24.5, 76}, {25.0, 77}, {25.5, 78}, {26.0, 79}, {26.5, 80},
+                {27.0, 81}, {27.5, 82}, {28.0, 83}, {28.5, 84}, {29.0, 85},
+                {29.5, 86}, {30.0, 87}, {30.5, 88}
+            };
+
+            if (auto it = lookupTable.find(tempC); it != lookupTable.end()) {
+                return it->second;
+            }
+
+            return std::lroundf(tempC * 1.8 + 32.0);
         }
 
         const char* getIfNotNull(const char* what, const char* defaultValue);
