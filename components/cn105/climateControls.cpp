@@ -180,7 +180,7 @@ static float mapCelsiusForConversionFromFahrenheit(const float c) {
 
 void CN105Climate::controlTemperature() {
     float setting = this->target_temperature;
-    if (true) {
+    if (use_fahrenheit_support_mode_) {
       setting = mapCelsiusForConversionFromFahrenheit(setting);
     }
     if (!this->tempMode) {
@@ -412,7 +412,10 @@ void CN105Climate::setWideVaneSetting(const char* setting) {
 
 void CN105Climate::set_remote_temperature(float setting) {
     this->shouldSendExternalTemperature_ = true;
-    this->remoteTemperature_ = mapCelsiusForConversionFromFahrenheit(setting);
+    if (use_fahrenheit_support_mode_) {
+      setting = mapCelsiusForConversionFromFahrenheit(setting);
+    }
+    this->remoteTemperature_ = setting;
     ESP_LOGD(LOG_REMOTE_TEMP, "setting remote temperature to %f", this->remoteTemperature_);
 }
 

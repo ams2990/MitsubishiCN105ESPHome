@@ -226,7 +226,7 @@ void CN105Climate::getSettingsFromResponsePacket() {
     } else {
         receivedSettings.temperature = lookupByteMapValue(TEMP_MAP, TEMP, 16, data[5], "temperature reading");
     }
-    if (true) {
+    if (use_fahrenheit_support_mode_) {
         receivedSettings.temperature = mapCelsiusForConversionToFahrenheit(receivedSettings.temperature);
     }
 
@@ -271,7 +271,7 @@ void CN105Climate::getRoomTemperatureFromResponsePacket() {
 
     if (data[5] > 1) {
         receivedStatus.outsideAirTemperature = (data[5] - 128) / 2.0f;
-        if (true) {
+        if (use_fahrenheit_support_mode_) {
             receivedStatus.outsideAirTemperature = mapCelsiusForConversionToFahrenheit(receivedStatus.outsideAirTemperature);
         }
     } else {
@@ -285,7 +285,7 @@ void CN105Climate::getRoomTemperatureFromResponsePacket() {
     } else {
         receivedStatus.roomTemperature = lookupByteMapValue(ROOM_TEMP_MAP, ROOM_TEMP, 32, data[3]);
     }
-    if (true) {
+    if (use_fahrenheit_support_mode_) {
         receivedStatus.roomTemperature = mapCelsiusForConversionToFahrenheit(receivedStatus.roomTemperature);
     }
 
