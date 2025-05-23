@@ -206,42 +206,6 @@ void CN105Climate::createPacket(uint8_t* packet) {
     //this->hpPacketDebug(packet, 22, "WRITE");
 }
 
-
-
-
-
-void CN105Climate::publishWantedSettingsStateToHA() {
-
-    if ((this->wantedSettings.mode != nullptr) || (this->wantedSettings.power != nullptr)) {
-        checkPowerAndModeSettings(this->wantedSettings, false);
-        this->updateAction();       // update action info on HA climate component
-    }
-
-    if (this->wantedSettings.fan != nullptr) {
-        checkFanSettings(this->wantedSettings, false);
-    }
-
-
-    if ((this->wantedSettings.vane != nullptr) || (this->wantedSettings.wideVane != nullptr)) {
-        if (this->wantedSettings.vane == nullptr) { // to prevent a nullpointer error
-            this->wantedSettings.vane = this->currentSettings.vane;
-        }
-        if (this->wantedSettings.wideVane == nullptr) { // to prevent a nullpointer error
-            this->wantedSettings.wideVane = this->currentSettings.wideVane;
-        }
-
-        checkVaneSettings(this->wantedSettings, false);
-    }
-
-    // HA Temp
-    this->target_temperature = this->getTemperatureSetting();
-
-    // publish to HA
-    this->publish_state();
-
-}
-
-
 void CN105Climate::sendWantedSettingsDelegate() {
     this->wantedSettings.hasBeenSent = true;
     this->lastSend = CUSTOM_MILLIS;
@@ -252,8 +216,6 @@ void CN105Climate::sendWantedSettingsDelegate() {
     this->createPacket(packet);
     this->writePacket(packet, PACKET_LEN);
     this->hpPacketDebug(packet, 22, "WRITE_SETTINGS");
-
-    this->publishWantedSettingsStateToHA();
 
     // as soon as the packet is sent, we reset the settings
     this->wantedSettings.resetSettings();
