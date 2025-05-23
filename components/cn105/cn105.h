@@ -288,7 +288,6 @@ namespace esphome {
         void prepareSetPacket(uint8_t* packet, int length);
 
         void publishStateToHA(heatpumpSettings& settings);
-        void publishWantedSettingsStateToHA();
 
         void heatpumpUpdate(heatpumpSettings& settings);
 
