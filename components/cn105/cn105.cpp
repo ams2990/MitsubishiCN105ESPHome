@@ -3,6 +3,8 @@
 
 using namespace esphome;
 
+static_assert(USE_ESP32, "not using esp32");
+
 
 CN105Climate::CN105Climate(uart::UARTComponent* uart) :
     UARTDevice(uart) {

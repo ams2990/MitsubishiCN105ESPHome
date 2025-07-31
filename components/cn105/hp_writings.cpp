@@ -211,14 +211,17 @@ void CN105Climate::createPacket(uint8_t* packet) {
 
 
 void CN105Climate::publishWantedSettingsStateToHA() {
+    ESP_LOGI(TAG, "publishWantedSettingsStateToHA");
+    this->debugSettings("currentSettings", this->currentSettings);
+    this->debugSettings("wantedSettings", wantedSettings);
 
     if ((this->wantedSettings.mode != nullptr) || (this->wantedSettings.power != nullptr)) {
-        checkPowerAndModeSettings(this->wantedSettings, false);
+        checkPowerAndModeSettings(this->wantedSettings, true);
         this->updateAction();       // update action info on HA climate component
     }
 
     if (this->wantedSettings.fan != nullptr) {
-        checkFanSettings(this->wantedSettings, false);
+        checkFanSettings(this->wantedSettings, true);
     }
 
 
@@ -230,7 +233,7 @@ void CN105Climate::publishWantedSettingsStateToHA() {
             this->wantedSettings.wideVane = this->currentSettings.wideVane;
         }
 
-        checkVaneSettings(this->wantedSettings, false);
+        checkVaneSettings(this->wantedSettings, true);
     }
 
     // HA Temp
@@ -246,7 +249,7 @@ void CN105Climate::sendWantedSettingsDelegate() {
     this->wantedSettings.hasBeenSent = true;
     this->lastSend = CUSTOM_MILLIS;
     ESP_LOGI(TAG, "sending wantedSettings..");
-    this->debugSettings("wantedSettings", wantedSettings);
+
     // and then we send the update packet
     uint8_t packet[PACKET_LEN] = {};
     this->createPacket(packet);

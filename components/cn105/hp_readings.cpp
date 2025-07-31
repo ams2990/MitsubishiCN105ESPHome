@@ -492,6 +492,9 @@ void CN105Climate::statusChanged(heatpumpStatus status) {
 
 
 void CN105Climate::publishStateToHA(heatpumpSettings& settings) {
+    ESP_LOGI(TAG, "publishStateToHA");
+    this->debugSettings("currentSettings", this->currentSettings);
+    this->debugSettings("settings", settings);
 
     if ((this->wantedSettings.mode == nullptr) && (this->wantedSettings.power == nullptr)) {        // to prevent overwriting a user demand
         checkPowerAndModeSettings(settings);
@@ -581,7 +584,7 @@ void CN105Climate::checkWideVaneSettings(heatpumpSettings& settings, bool update
 
     if (this->hasChanged(currentSettings.wideVane, settings.wideVane, "wideVane")) {    // widevane setting change ?
         ESP_LOGI(TAG, "widevane setting changed");
-        this->debugSettings("settings", settings);
+        // this->debugSettings("settings", settings);
 
         // here I hope that the vane and widevane are always sent together
         if (updateCurrentSettings) {
